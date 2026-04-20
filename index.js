@@ -138,7 +138,7 @@ bot.hears('6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor', async (ctx) => {
     const path = require('path');
     // Qo'g'irchoqlar ma'lumoti
     const dolls = [
-        { name: "1. Klara to'plami", price: "210 000 so'm", filename: "zara_doll_1776486339664.png" }, // Reusing zara image for klara due to generation limit
+        { name: "1. Klara to'plami", price: "210 000 so'm", filename: "klara_doll_1776486339664.png" },   
         { name: "2. Alisa to'plami", price: "230 000 so'm", filename: "alisa_doll_1776486122819.png" },
         { name: "3. Zara to'plami", price: "210 000 so'm", filename: "zara_doll_1776486339664.png" },
         { name: "4. Ella to'plami", price: "200 000 so'm", filename: "ella_doll_1776486360708.png" },
