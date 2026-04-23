@@ -7,57 +7,56 @@ const adminId = process.env.ADMIN_CHAT_ID;
 
 if (!token) throw new Error('"BOT_TOKEN" is required!');
 
-// Botni initsializatsiya qilish
+// 2. Botni initsializatsiya qilish
 const bot = new Telegraf(token);
 
-// --- STATISTIKA (Xotirada saqlash) ---
-// Eslatma: Dastur yopilsa bu ma'lumotlar o'chadi. Kelajakda faylga saqlasa bo'ladi.
+// 3. STATISTIKA - Nechta odam kirgani va buyurtmalar soni
 let stats = {
     users: new Set(),
     ordersCount: 0
 };
 
-// --- BUYURTMA SAHNASI (Scene) ---
-// Har qadamda navbatma navbat so'raydigan Scene (Sahnani) yaratamiz
+// 4. BUYURTMA SAHNASI (Order Scene)
+// Foydalanuvchidan ma'lumotlarni bosqichma-bosqich so'rash uchun
 const orderScene = new Scenes.WizardScene(
     'ORDER_SCENE',
     (ctx) => {
         // 1-qadam: Ismni so'rash
         ctx.reply("Ismingiz?");
-        ctx.wizard.state.order = {}; // Buyurtma ma'lumotlarini saqlash uchun maxsus obyekt ochamiz
-        return ctx.wizard.next(); // Keyingi qadamga o'tish
+        ctx.wizard.state.order = {}; // Buyurtma obyekti
+        return ctx.wizard.next();
     },
     (ctx) => {
-        // 2-qadam: Ismni qabul qilib telefonni so'rash
+        // 2-qadam: Telefonni so'rash
         if (!ctx.message || !ctx.message.text) return;
         ctx.wizard.state.order.name = ctx.message.text;
         ctx.reply("Telefo'n raqamingiz?");
         return ctx.wizard.next();
     },
     (ctx) => {
-        // 3-qadam: Telefonni qabul qilib to'plamni so'rash
+        // 3-qadam: Qaysi to'plam kerakligini so'rash
         if (!ctx.message || !ctx.message.text) return;
         ctx.wizard.state.order.phone = ctx.message.text;
         ctx.reply(
             "Qaysi to'plam kerak?\n" +
-            "1. Klara to'plami (210,000 so'm)\n" +
-            "2. Alisa to'plami (230,000 so'm)\n" +
-            "3. Zara to'plami (210,000 so'm)\n" +
-            "4. Ella to'plami (200,000 so'm)\n" +
-            "5. Ro'za to'plami (210,000 so'm)\n" +
-            "6. Liza To'plami (500,000 so'm)"
+            "1. Klara to'plami (210,000 ming so'm)\n" +
+            "2. Alisa to'plami (230,000 ming so'm)\n" +
+            "3. Zara to'plami (210,000 ming so'm)\n" +
+            "4. Ella to'plami (200,000 ming so'm)\n" +
+            "5. Ro'za to'plami (210,000 ming so'm)\n" +
+            "6. Liza To'plami (500,000 ming so'm)"
         );
         return ctx.wizard.next();
     },
     (ctx) => {
-        // 4-qadam: To'plamni qabul qilib izohni so'rash
+        // 4-qadam: Qo'shimcha izohni so'rash
         if (!ctx.message || !ctx.message.text) return;
         ctx.wizard.state.order.items = ctx.message.text;
         ctx.reply("Qo'shimcha izoh bormi?");
         return ctx.wizard.next();
     },
     async (ctx) => {
-        // 5-qadam: Izohni qabul qilib, adminga yuborish
+        // 5-qadam: Izohni qabul qilib, xabarni adminga jo'natish
         if (!ctx.message || !ctx.message.text) return;
         ctx.wizard.state.order.note = ctx.message.text;
         
@@ -66,85 +65,113 @@ const orderScene = new Scenes.WizardScene(
         // Foydalanuvchiga tasdiq xabari yuborish
         await ctx.reply("Buyurtmangiz qabul qilindi! Tez orada aloqaga chiqamiz.", getMainKeyboard());
         
-        // Adminga xabar formatlash
+        // Adminga yuboriladigan xabar formati
         stats.ordersCount++;
         const adminMsg = `📦 <b>Yangi buyurtma qabul qilindi!</b>\n\n` +
             `👤 <b>Mijoz:</b> ${name}\n` +
             `📞 <b>Telefon:</b> ${phone}\n` +
-            `🛍 <b>To'plam:</b> ${items}\n` +
+            `🛍 <b>To'plam (Nima xohlaydi?):</b> ${items}\n` +
             `📝 <b>Izoh:</b> ${note}\n\n` +
             `🔗 <b>Username:</b> @${ctx.from.username || "Mavjud emas"}`;
         
         try {
-            // Sizga (adminga) xabar ketadi
+            // Adminga xabarni yuborish
             await bot.telegram.sendMessage(adminId, adminMsg, { parse_mode: "HTML" });
         } catch (e) {
             console.error("Adminga xabar yuborishda xato:", e);
         }
 
-        return ctx.scene.leave(); // Sahnadan (Scene'dan) chiqish
+        return ctx.scene.leave(); // Sahnani yakunlash
     }
 );
 
-// --- ASOSIY MENYU ---
+// 5. ASOSIY MENYU TUGMALARI
 function getMainKeyboard() {
     return Markup.keyboard([
-        ['6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor', 'Buyurtma berish'],
-        ['Bog\'lanish', 'Savollar']
+        ['Bepul darslik', '6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor'],
+        ['Kerakli mahsulotlar', 'Savollar'],
+        ['Buyurtma berish', 'Bog\'lanish']
     ]).resize();
 }
 
-// Stage-ni (sahnani) ro'yxatdan o'tkazish
+// Stage-ni yaratish
 const stage = new Scenes.Stage([orderScene]);
 
-// Middleware-lar
-bot.use(session()); // Sessiyalar ishlashi uchun
-bot.use(stage.middleware()); // Sahnalar ishlashi uchun
+// Middleware-larni ishlatish
+bot.use(session()); 
+bot.use(stage.middleware()); 
 
-// Statistikani hisoblash (middleware)
+// Foydalanuvchilar sonini hisoblash uchun middleware
 bot.use((ctx, next) => {
     if (ctx.from) {
-        stats.users.add(ctx.from.id); // Takrorlanmas tarzda id larni saqlaydi
+        stats.users.add(ctx.from.id);
     }
     return next();
 });
 
-// --- KOMANDALAR VA TUGMALAR ---
-
-// /start komandasida xush kelibsiz xabari va menyu
+// 6. START KOMANDASI
 bot.start((ctx) => {
     ctx.reply(
-        `Salom, ${ctx.from.first_name}! Bizning sotuv botimizga xush kelibsiz. Quyidagi menyudan kerakli bo'limni tanlang:`,
+        `Salom, ${ctx.from.first_name}! Bizning sotuv botimizga xush kelibsiz.`,
         getMainKeyboard()
     );
 });
 
-// /admin komandasi
+// 7. ADMIN KOMANDASI
+// /admin yozganda bot statistikani adminga ko'rsatadi
 bot.command('admin', (ctx) => {
-    // Faqat admin ishlata oladi yoki hamma? Shartga ko'ra adminga dedingiz.
-    // Men sizning ID ni tekshiryapman
     if (ctx.from.id.toString() === adminId.toString()) {
-        ctx.reply(`📊 <b>Bot Statistikasi:</b>\n\n👥 Barcha mijozlar: ${stats.users.size} ta\n🛍 Qabul qilingan buyurtmalar: ${stats.ordersCount} ta`, { parse_mode: 'HTML' });
+        ctx.reply(`📊 <b>Bot Statistikasi:</b>\n\n👥 Ishlatgan odamlar soni: ${stats.users.size} ta\n🛍 Qabul qilingan buyurtmalar: ${stats.ordersCount} ta`, { parse_mode: 'HTML' });
     } else {
         ctx.reply("Sizda admin huquqlari yo'q.");
     }
 });
 
-// To'plamlar tugmasi bosilganda
-bot.hears('6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor', async (ctx) => {
-    // Mijozga xabar yuborish
-    await ctx.reply("6 xil qo'g'irchoq tikish to'plamlarimiz bor.");
+// 8. MENYU TUGMALARIGA JAVOBLAR
 
+// Bepul darslik tugmasi
+bot.hears('Bepul darslik', async (ctx) => {
+    const text = "Salom! 7 yillik hunarmand master sifatida ,ijodkorlikka qiziqish bildirayotganligingizdan hursandman! Marhamat bepul darslikni oling.";
+    
+    // Rasm va tugma bilan yuborish (Rasm sifatida photo_2026-04-21_18-12-25.png ni sozladik, o'rniga o'zgartirishingiz mumkin)
     const path = require('path');
-    // Qo'g'irchoqlar ma'lumoti
+    try {
+        await ctx.replyWithPhoto(
+            { source: path.join(__dirname, 'images', 'photo_2026-04-21_18-12-25.png') }, 
+            {
+                caption: text,
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: "Darslikni ko'rish", url: "https://t.me/master_tkaniart/543" }]
+                    ]
+                }
+            }
+        );
+    } catch (e) {
+        // Agar rasm topilmasa, shunchaki text va tugmani o'zini yuboradi
+        await ctx.reply(text, {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "Darslikni ko'rish", url: "https://t.me/master_tkaniart/543" }]
+                ]
+            }
+        });
+    }
+});
+
+// To'plamlar tugmasi bosilganda narxlari, rasm va nomlari bilan chiqarish
+bot.hears('6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor', async (ctx) => {
+    const path = require('path');
     const dolls = [
-        { name: "1. Klara to'plami", price: "210 000 so'm", filename: "klara_doll_1776486339664.png" },   
-        { name: "2. Alisa to'plami", price: "230 000 so'm", filename: "alisa_doll_1776486122819.png" },
-        { name: "3. Zara to'plami", price: "210 000 so'm", filename: "zara_doll_1776486339664.png" },
-        { name: "4. Ella to'plami", price: "200 000 so'm", filename: "ella_doll_1776486360708.png" },
-        { name: "5. Ro'za to'plami", price: "210 000 so'm", filename: "roza_doll_1776486425978.png" },
-        { name: "6. Liza To'plami", price: "500 000 so'm", filename: "liza_doll_1776486509967.png" }
+        { name: "1. Klara to'plami", price: "210 000 ming so'm", filename: "klara_doll.png" },
+        { name: "2. Alisa to'plami", price: "230 000 ming so'm", filename: "alisa_doll_1776486122819.png" },
+        { name: "3. Zara to'plami", price: "210 000 ming so'm", filename: "zara_doll_1776486339664.png" },
+        { name: "4. Ella to'plami", price: "200 000 ming so'm", filename: "ella_doll_1776486360708.png" },
+        { name: "5. Ro'za to'plami", price: "210 000 ming so'm", filename: "roza_doll_1776486425978.png" },
+        { name: "6. Liza To'plami", price: "500 000 ming so'm", filename: "liza_doll_1776486509967.png" }
     ];
+
+    await ctx.reply("Bizning 6 xil qo'g'irchoq tikish to'plamlarimiz qatoriga quyidagilar kiradi:");
 
     for (const doll of dolls) {
         try {
@@ -160,28 +187,42 @@ bot.hears('6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor', async (ctx) => {
 
 // Buyurtma berish tugmasi
 bot.hears('Buyurtma berish', (ctx) => {
-    // Buyurtma sahnasini boshlash
-    ctx.scene.enter('ORDER_SCENE');
+    ctx.scene.enter('ORDER_SCENE'); // Buyurtma bosqichlarini boshlaydi
 });
 
 // Bog'lanish tugmasi
 bot.hears('Bog\'lanish', (ctx) => {
     ctx.reply(
-        "📞 Bizning kontaktlar:\n\n" +
-        "🔹 Telegram: @username\n" + // @username larni o'zingiz tahrirlab olasiz
-        "🔹 Telefon: +99890123456\n" +
+        "📞 Biz bilan bog'lanish:\n\n" +
+        "🔹 Telegram: @Nodira_Abdullaevna\n" +
+        "🔹 Telefo'n: +998950589181\n" +
         "🕒 Ish vaqti: 09:00- 18:00"
     );
 });
 
-// Savollar tugmasi
+// Kerakli mahsulotlar tugmasi (Web sayt linki)
+bot.hears('Kerakli mahsulotlar', (ctx) => {
+    ctx.reply("Do'konimizga tashrif buyurishingiz mumkin:", {
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: "🖥 Web saytga kirish", url: "http://mahinadolls.uz" }]
+            ]
+        }
+    });
+});
+
+// Savollar tugmasi (FAQ)
 bot.hears('Savollar', (ctx) => {
     ctx.reply(
-        "Ko'p beriladigan savollar:\n" +
-        "- \"Qanday uslubda olish mumkin?\"\n" +
-        "- \"Toshkent bo'ylab Yandex, Viloyatlar bo'ylab 1 kundan 3 kungacha BTS pochta orqali.\"\n" +
-        "- \"To'lov usuli?\"\n" +
-        "- \"Karta orqali oldindan to'lov\"."
+        "❓ <b>Ko'p beriladigan savollar:</b>\n\n" +
+        "💬 <i>- Video darsliklar qanday formatda bo'ladi?</i>\n" +
+        "✅ - Onlayn formatda\n\n" +
+        "💬 <i>- Qanday uslubda olish mumkin?</i>\n" +
+        "✅ - Toshkent bo'ylab Yandex orqali\n" +
+        "  - Viloyatlar bo'ylab 1 kundan 3 kungacha BTS pochta orqali.\n\n" +
+        "💬 <i>- To'lov usuli?</i>\n" +
+        "✅ - Karta orqali oldindan to'lov.",
+        { parse_mode: 'HTML' }
     );
 });
 
@@ -190,11 +231,11 @@ bot.catch((err, ctx) => {
     console.error(`Xatolik yuz berdi ctx: ${ctx.updateType}`, err);
 });
 
-// Botni ishga tushirish (Polling metodi orqali)
+// 9. BOTNI ISHGA TUSHIRISH
 bot.launch()
     .then(() => console.log('✅ Sotuv bot muvaffaqiyatli ishga tushdi.'))
     .catch(err => console.error("❌ Bot ishga tushishida xatolik:", err));
 
-// Dastur to'xtatilishini nazorat qilish (To'g'ri o'chishi uchun)
+// Dastur to'g'ri yopilishi uchun (Graceful stop)
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
