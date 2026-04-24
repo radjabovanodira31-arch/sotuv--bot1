@@ -1,5 +1,7 @@
 require('dotenv').config();
 const { Telegraf, session, Scenes, Markup } = require('telegraf');
+const path = require('path');
+const fs = require('fs');
 
 // 1. .env fayldan token va admin_chat_id ni yuklash
 const token = process.env.BOT_TOKEN;
@@ -9,6 +11,16 @@ if (!token) throw new Error('"BOT_TOKEN" is required!');
 
 // 2. Botni initsializatsiya qilish
 const bot = new Telegraf(token);
+
+// Debug: Railway'da rasmlar bor-yo'qligini tekshirish
+const imagesDir = path.join(__dirname, 'images');
+console.log('🔍 Rasmlar papkasini tekshirmoqdamiz:', imagesDir);
+if (fs.existsSync(imagesDir)) {
+    const files = fs.readdirSync(imagesDir);
+    console.log('✅ Rasmlar papkasi topildi. Fayllar:', files);
+} else {
+    console.error('❌ XORAZM! "images" papkasi topilmadi! GitHubga rasm papkasini ham push qilganingizga ishonch hosil qiling.');
+}
 
 // 3. STATISTIKA - Nechta odam kirgani va buyurtmalar soni
 let stats = {
@@ -133,22 +145,47 @@ bot.command('admin', (ctx) => {
 bot.hears('Bepul darslik', async (ctx) => {
     const text = "Salom! 7 yillik hunarmand master sifatida ,ijodkorlikka qiziqish bildirayotganligingizdan hursandman! Marhamat bepul darslikni oling.";
     
-    // Rasm va tugma bilan yuborish (Rasm sifatida photo_2026-04-21_18-12-25.png ni sozladik, o'rniga o'zgartirishingiz mumkin)
-    const path = require('path');
+    // Yuborilishi kerak bo'lgan rasmlar ro'yxati
+    const photoFiles = [
+        'photo_2026-04-21_18-12-25.png', // Master Nodira Abdullaevna
+        'klara_doll.png',
+        'alisa_doll_1776486122819.png',
+        'zara_doll_1776486339664.png',
+        'ella_doll_1776486360708.png',
+        'roza_doll_1776486425978.png',
+        'liza_doll_1776486509967.png'
+    ];
+
+    const mediaGroup = [];
+
+    for (const file of photoFiles) {
+        const photoPath = path.join(__dirname, 'images', file);
+        if (fs.existsSync(photoPath)) {
+            mediaGroup.push({
+                type: 'photo',
+                media: { source: photoPath }
+            });
+        } else {
+            console.warn(`⚠️ Rasm topilmadi: ${file}`);
+        }
+    }
+
     try {
-        await ctx.replyWithPhoto(
-            { source: path.join(__dirname, 'images', 'photo_2026-04-21_18-12-25.png') }, 
-            {
-                caption: text,
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: "Darslikni ko'rish", url: "https://t.me/master_tkaniart/543" }]
-                    ]
-                }
+        if (mediaGroup.length > 0) {
+            // Rasmlarni album (media group) ko'rinishida yuborish
+            await ctx.replyWithMediaGroup(mediaGroup);
+        }
+        
+        // Matn va tugmani yuborish
+        await ctx.reply(text, {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "Darslikni ko'rish", url: "https://t.me/master_tkaniart/543" }]
+                ]
             }
-        );
+        });
     } catch (e) {
-        // Agar rasm topilmasa, shunchaki text va tugmani o'zini yuboradi
+        console.error("Bepul darslik yuborishda xato:", e.message);
         await ctx.reply(text, {
             reply_markup: {
                 inline_keyboard: [
@@ -161,7 +198,6 @@ bot.hears('Bepul darslik', async (ctx) => {
 
 // To'plamlar tugmasi bosilganda narxlari, rasm va nomlari bilan chiqarish
 bot.hears('6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor', async (ctx) => {
-    const path = require('path');
     const dolls = [
         { name: "1. Klara to'plami", price: "210 000 ming so'm", filename: "klara_doll.png" },
         { name: "2. Alisa to'plami", price: "230 000 ming so'm", filename: "alisa_doll_1776486122819.png" },
@@ -174,13 +210,18 @@ bot.hears('6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor', async (ctx) => {
     await ctx.reply("Bizning 6 xil qo'g'irchoq tikish to'plamlarimiz qatoriga quyidagilar kiradi:");
 
     for (const doll of dolls) {
+        const photoPath = path.join(__dirname, 'images', doll.filename);
         try {
-            await ctx.replyWithPhoto(
-                { source: path.join(__dirname, 'images', doll.filename) },
-                { caption: `🛍 <b>${doll.name}</b>\n💰 Narxi: ${doll.price}`, parse_mode: "HTML" }
-            );
+            if (fs.existsSync(photoPath)) {
+                await ctx.replyWithPhoto(
+                    { source: photoPath },
+                    { caption: `🛍 <b>${doll.name}</b>\n💰 Narxi: ${doll.price}`, parse_mode: "HTML" }
+                );
+            } else {
+                await ctx.reply(`🛍 <b>${doll.name}</b>\n💰 Narxi: ${doll.price}\n⚠️ (Rasm topilmadi)`, { parse_mode: "HTML" });
+            }
         } catch (error) {
-            console.error(`Rasm yuborishda xatolik (${doll.name}):`, error);
+            console.error(`Rasm yuborishda xatolik (${doll.name}):`, error.message);
         }
     }
 });
@@ -228,13 +269,13 @@ bot.hears('Savollar', (ctx) => {
 
 // Kutilmagan xatoliklarni ushlash
 bot.catch((err, ctx) => {
-    console.error(`Xatolik yuz berdi ctx: ${ctx.updateType}`, err);
+    console.error(`Xatolik yuz berdi ctx: ${ctx.updateType}`, err.message);
 });
 
 // 9. BOTNI ISHGA TUSHIRISH
 bot.launch()
     .then(() => console.log('✅ Sotuv bot muvaffaqiyatli ishga tushdi.'))
-    .catch(err => console.error("❌ Bot ishga tushishida xatolik:", err));
+    .catch(err => console.error("❌ Bot ishga tushishida xatolik:", err.message));
 
 // Dastur to'g'ri yopilishi uchun (Graceful stop)
 process.once('SIGINT', () => bot.stop('SIGINT'));
