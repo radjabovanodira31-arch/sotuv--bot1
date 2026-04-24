@@ -141,45 +141,33 @@ bot.command('admin', (ctx) => {
 bot.hears('Bepul darslik', async (ctx) => {
     const text = "Salom! 7 yillik hunarmand master sifatida ,ijodkorlikka qiziqish bildirayotganligingizdan hursandman! Marhamat bepul darslikni oling.";
     
-    // GitHub'dagi aniq rasm nomlari (asosiy papkada turgani uchun path.join o'zgardi)
-    const photoFiles = [
-        'photo_2026-04-21_18-12-25.png', // Master Nodira Abdullaevna
-        'klara_yangi.png', // Klara to'plami (yangi nomi)
-        'alisa_doll_1776486122819.png',
-        'zara_doll_1776486339664.png',
-        'ella_doll_1776486360708.png',
-        'roza_doll_1776486425978.png',
-        'liza_doll_1776486509967.png'
-    ];
-
-    const mediaGroup = [];
-
-    for (const file of photoFiles) {
-        const photoPath = path.join(__dirname, file); // 'images' papkasini olib tashladik
-        if (fs.existsSync(photoPath)) {
-            mediaGroup.push({
-                type: 'photo',
-                media: { source: photoPath }
-            });
-        } else {
-            console.warn(`⚠️ Rasm topilmadi: ${file}`);
-        }
-    }
+    // Faqat masterni surati (root papkada turgani uchun path.join o'zgardi)
+    const photoPath = path.join(__dirname, 'photo_2026-04-21_18-12-25.png');
 
     try {
-        if (mediaGroup.length > 0) {
-            // Rasmlarni album (media group) ko'rinishida yuborish
-            await ctx.replyWithMediaGroup(mediaGroup);
+        if (fs.existsSync(photoPath)) {
+            // Rasmni matn va tugma bilan birga yuborish
+            await ctx.replyWithPhoto(
+                { source: photoPath }, 
+                {
+                    caption: text,
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "Darslikni ko'rish", url: "https://t.me/master_tkaniart/543" }]
+                        ]
+                    }
+                }
+            );
+        } else {
+            // Rasm topilmasa faqat matnni yuborish
+            await ctx.reply(text, {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: "Darslikni ko'rish", url: "https://t.me/master_tkaniart/543" }]
+                    ]
+                }
+            });
         }
-        
-        // Matn va tugmani yuborish
-        await ctx.reply(text, {
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: "Darslikni ko'rish", url: "https://t.me/master_tkaniart/543" }]
-                ]
-            }
-        });
     } catch (e) {
         console.error("Bepul darslik yuborishda xato:", e.message);
         await ctx.reply(text, {
