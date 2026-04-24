@@ -13,14 +13,10 @@ if (!token) throw new Error('"BOT_TOKEN" is required!');
 const bot = new Telegraf(token);
 
 // Debug: Railway'da rasmlar bor-yo'qligini tekshirish
-const imagesDir = path.join(__dirname, 'images');
+const imagesDir = __dirname; // Rasmlar GitHubda asosiy papkada (root) joylashgan
 console.log('🔍 Rasmlar papkasini tekshirmoqdamiz:', imagesDir);
-if (fs.existsSync(imagesDir)) {
-    const files = fs.readdirSync(imagesDir);
-    console.log('✅ Rasmlar papkasi topildi. Fayllar:', files);
-} else {
-    console.error('❌ XORAZM! "images" papkasi topilmadi! GitHubga rasm papkasini ham push qilganingizga ishonch hosil qiling.');
-}
+const files = fs.readdirSync(imagesDir);
+console.log('✅ Papkadagi fayllar:', files);
 
 // 3. STATISTIKA - Nechta odam kirgani va buyurtmalar soni
 let stats = {
@@ -145,10 +141,10 @@ bot.command('admin', (ctx) => {
 bot.hears('Bepul darslik', async (ctx) => {
     const text = "Salom! 7 yillik hunarmand master sifatida ,ijodkorlikka qiziqish bildirayotganligingizdan hursandman! Marhamat bepul darslikni oling.";
     
-    // Yuborilishi kerak bo'lgan rasmlar ro'yxati
+    // GitHub'dagi aniq rasm nomlari (asosiy papkada turgani uchun path.join o'zgardi)
     const photoFiles = [
         'photo_2026-04-21_18-12-25.png', // Master Nodira Abdullaevna
-        'klara_doll.png',
+        'klara_yangi.png', // Klara to'plami (yangi nomi)
         'alisa_doll_1776486122819.png',
         'zara_doll_1776486339664.png',
         'ella_doll_1776486360708.png',
@@ -159,7 +155,7 @@ bot.hears('Bepul darslik', async (ctx) => {
     const mediaGroup = [];
 
     for (const file of photoFiles) {
-        const photoPath = path.join(__dirname, 'images', file);
+        const photoPath = path.join(__dirname, file); // 'images' papkasini olib tashladik
         if (fs.existsSync(photoPath)) {
             mediaGroup.push({
                 type: 'photo',
@@ -199,7 +195,7 @@ bot.hears('Bepul darslik', async (ctx) => {
 // To'plamlar tugmasi bosilganda narxlari, rasm va nomlari bilan chiqarish
 bot.hears('6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor', async (ctx) => {
     const dolls = [
-        { name: "1. Klara to'plami", price: "210 000 ming so'm", filename: "klara_doll.png" },
+        { name: "1. Klara to'plami", price: "210 000 ming so'm", filename: "klara_yangi.png" },
         { name: "2. Alisa to'plami", price: "230 000 ming so'm", filename: "alisa_doll_1776486122819.png" },
         { name: "3. Zara to'plami", price: "210 000 ming so'm", filename: "zara_doll_1776486339664.png" },
         { name: "4. Ella to'plami", price: "200 000 ming so'm", filename: "ella_doll_1776486360708.png" },
@@ -210,7 +206,7 @@ bot.hears('6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor', async (ctx) => {
     await ctx.reply("Bizning 6 xil qo'g'irchoq tikish to'plamlarimiz qatoriga quyidagilar kiradi:");
 
     for (const doll of dolls) {
-        const photoPath = path.join(__dirname, 'images', doll.filename);
+        const photoPath = path.join(__dirname, doll.filename); // 'images' papkasini olib tashladik
         try {
             if (fs.existsSync(photoPath)) {
                 await ctx.replyWithPhoto(
