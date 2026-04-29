@@ -47,12 +47,12 @@ const orderScene = new Scenes.WizardScene(
         ctx.wizard.state.order.phone = ctx.message.text;
         ctx.reply(
             "Qaysi to'plam kerak?\n" +
-            "1. Klara to'plami (210,000 ming so'm)\n" +
-            "2. Alisa to'plami (230,000 ming so'm)\n" +
-            "3. Zara to'plami (210,000 ming so'm)\n" +
-            "4. Ella to'plami (200,000 ming so'm)\n" +
-            "5. Ro'za to'plami (210,000 ming so'm)\n" +
-            "6. Liza To'plami (500,000 ming so'm)"
+            "1. Klara to'plami (160,000 ming so'm)\n" +
+            "2. Alisa to'plami (170,000 ming so'm)\n" +
+            "3. Zara to'plami (150,000 ming so'm)\n" +
+            "4. Ella to'plami (150,000 ming so'm)\n" +
+            "5. Ro'za to'plami (150,000 ming so'm)\n" +
+            "6. Liza To'plami (350,000 ming so'm)"
         );
         return ctx.wizard.next();
     },
@@ -183,12 +183,12 @@ bot.hears('Bepul darslik', async (ctx) => {
 // To'plamlar tugmasi bosilganda narxlari, rasm va nomlari bilan chiqarish
 bot.hears('6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor', async (ctx) => {
     const dolls = [
-        { name: "1. Klara to'plami", price: "210 000 ming so'm", filename: "klara_yangi.png" },
-        { name: "2. Alisa to'plami", price: "230 000 ming so'm", filename: "alisa_doll_1776486122819.png" },
-        { name: "3. Zara to'plami", price: "210 000 ming so'm", filename: "zara_doll_1776486339664.png" },
-        { name: "4. Ella to'plami", price: "200 000 ming so'm", filename: "ella_doll_1776486360708.png" },
-        { name: "5. Ro'za to'plami", price: "210 000 ming so'm", filename: "roza_doll_1776486425978.png" },
-        { name: "6. Liza To'plami", price: "500 000 ming so'm", filename: "liza_doll_1776486509967.png" }
+        { name: "1. Klara to'plami", price: "160 000 ming so'm", filename: "klara_yangi.png" },
+        { name: "2. Alisa to'plami", price: "170 000 ming so'm", filename: "alisa_doll_1776486122819.png" },
+        { name: "3. Zara to'plami", price: "150 000 ming so'm", filename: "zara_doll_1776486339664.png" },
+        { name: "4. Ella to'plami", price: "150 000 ming so'm", filename: "ella_doll_1776486360708.png" },
+        { name: "5. Ro'za to'plami", price: "150 000 ming so'm", filename: "roza_doll_1776486425978.png" },
+        { name: "6. Liza To'plami", price: "350 000 ming so'm", filename: "liza_doll_1776486509967.png" }
     ];
 
     await ctx.reply("Bizning 6 xil qo'g'irchoq tikish to'plamlarimiz qatoriga quyidagilar kiradi:");
@@ -225,15 +225,81 @@ bot.hears('Bog\'lanish', (ctx) => {
     );
 });
 
-// Kerakli mahsulotlar tugmasi (Web sayt linki)
+// Kerakli mahsulotlar tugmasi
 bot.hears('Kerakli mahsulotlar', (ctx) => {
-    ctx.reply("Do'konimizga tashrif buyurishingiz mumkin:", {
+    ctx.reply("Qaysi bo'limdan mahsulot xarid qilmoqchisiz?", {
         reply_markup: {
             inline_keyboard: [
-                [{ text: "🖥 Web saytga kirish", url: "http://mahinadolls.uz" }]
+                [{ text: "🧵 Matolar", callback_data: "cat_matolar" }, { text: "💇‍♀️ Sochlar", callback_data: "cat_sochlar" }],
+                [{ text: "👟 Oyoq kiyimlar", callback_data: "cat_oyoq" }, { text: "🎀 Aksessuarlar", callback_data: "cat_aksessuar" }]
             ]
         }
     });
+});
+
+bot.action('cat_matolar', (ctx) => {
+    const text = "🧵 <b>Matolar bo'limi:</b>\n\n" +
+        "1. Kukolniy trikotaj (0,5 metr) - 35 000 so'm\n" +
+        "2. Alisa uchun to'plam matolari + furnitura (2 talik) - 55 000 so'm\n" +
+        "3. Klara uchun to'plam matosi + furnitura - 45 000 so'm\n" +
+        "4. Zara uchun to'plam matosi + furnitura - 45 000 so'm\n" +
+        "5. Ro'za uchun to'plam matosi + furnitura - 45 000 so'm\n" +
+        "6. Ella uchun to'plam matosi + furnitura - 40 000 so'm";
+    ctx.answerCbQuery();
+    ctx.reply(text, { parse_mode: "HTML" });
+});
+
+bot.action('cat_sochlar', (ctx) => {
+    const text = "💇‍♀️ <b>Sochlar bo'limi:</b>\n\n" +
+        "1. To'q jigarrang soch (25 sm) - 23 000 so'm\n" +
+        "2. Kashtan rangli soch (25 sm) - 23 000 so'm\n" +
+        "3. Sariq soch (25 sm) - 23 000 so'm\n" +
+        "4. To'q jigarrang soch (15 sm) - 18 000 so'm\n" +
+        "5. Sariq soch (15 sm) - 18 000 so'm\n" +
+        "6. To'q jigarrang soch (5 sm) - 12 000 so'm\n" +
+        "7. To'q kashtan soch (5 sm) - 12 000 so'm\n" +
+        "8. Pushti soch (25 sm) - 23 000 so'm\n" +
+        "9. Siyohrang soch (25 sm) - 23 000 so'm\n" +
+        "10. To'lqin kashtan soch (20 sm) - 25 000 so'm\n" +
+        "11. To'lqin rusiy soch (15 sm) - 20 000 so'm\n" +
+        "12. Lokon kashtan rang (15 sm) - 25 000 so'm";
+    ctx.answerCbQuery();
+    ctx.reply(text, { parse_mode: "HTML" });
+});
+
+bot.action('cat_oyoq', (ctx) => {
+    const text = "👟 <b>Oyoq kiyimlar bo'limi:</b>\n\n" +
+        "1. Och pushti keda (5 sm) - 20 000 so'm\n" +
+        "2. To'q pushti keda - 20 000 so'm\n" +
+        "3. Qora keda - 20 000 so'm\n" +
+        "4. Havorang keda - 20 000 so'm\n" +
+        "5. Siyohrang keda - 20 000 so'm\n" +
+        "6. Sandal (5,5 sm, pushti) - 25 000 so'm";
+    ctx.answerCbQuery();
+    ctx.reply(text, { parse_mode: "HTML" });
+});
+
+bot.action('cat_aksessuar', (ctx) => {
+    const text = "🎀 <b>Aksessuarlar bo'limi:</b>\n\n" +
+        "1. Tugmacha (18 mmli) - 300 so'm\n" +
+        "2. Tugmacha (12 mmli) - 200 so'm\n" +
+        "3. Remen regulyator - 1 000 so'm\n" +
+        "4. Qora ko'z (8 mmli, 1 pachka) - 6 000 so'm\n" +
+        "5. Qora ko'z (4 mmli, 1 pachka) - 5 000 so'm\n" +
+        "6. Kipriklar (8 mmli) - 13 000 so'm\n" +
+        "7. Metall knopka (sumka uchun) - 1 000 so'm\n" +
+        "8. Termonakleyka (12x12 sm) - 12 000 so'm\n" +
+        "9. Yuz termonakleykasi (donasi) - 3 000 so'm\n" +
+        "10. Kiprikli yuz - 3 000 so'm\n" +
+        "11. Jung igna (9 sm) - 1 500 so'm\n" +
+        "12. Oq jung (50 gr) - 35 000 so'm\n" +
+        "13. Dermantin (30x30 sm, havorang+pushti 2 ta) - 18 000 so'm\n" +
+        "14. Zanjir (3 mmli, 1 metr) - 4 000 so'm\n" +
+        "15. Metal knopka (sarafan uchun, 1 jufti) - 4 000 so'm\n" +
+        "16. Oq quyoncha (6 sm) - 9 000 so'm\n" +
+        "17. Xalqa (6 mmli, 1 pachka) - 9 000 so'm";
+    ctx.answerCbQuery();
+    ctx.reply(text, { parse_mode: "HTML" });
 });
 
 // Savollar tugmasi (FAQ)
