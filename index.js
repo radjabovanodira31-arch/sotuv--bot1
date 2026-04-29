@@ -26,6 +26,14 @@ let stats = {
 
 // MAHSULOTLAR BAZASI
 const productsData = {
+    cat_toplam: [
+        { id: "t1", name: "1. Klara to'plami", price: 160000, image: "klara_yangi.png" },
+        { id: "t2", name: "2. Alisa to'plami", price: 170000, image: "alisa_doll_1776486122819.png" },
+        { id: "t3", name: "3. Zara to'plami", price: 150000, image: "zara_doll_1776486339664.png" },
+        { id: "t4", name: "4. Ella to'plami", price: 150000, image: "ella_doll_1776486360708.png" },
+        { id: "t5", name: "5. Ro'za to'plami", price: 150000, image: "roza_doll_1776486425978.png" },
+        { id: "t6", name: "6. Liza To'plami", price: 350000, image: "liza_doll_1776486509967.png" }
+    ],
     cat_matolar: [
         { id: "m1", name: "Kukolniy trikotaj (0,5 metr)", price: 35000 },
         { id: "m2", name: "Alisa uchun to'plam matolari (2 ta)", price: 55000 },
@@ -84,18 +92,15 @@ function getCartQty(ctx, productId) {
     return ctx.session.cart[productId] || 0;
 }
 
-function renderCategoryKeyboard(ctx, categoryId) {
-    const products = productsData[categoryId] || [];
-    let keyboard = [];
-    products.forEach((p, idx) => {
-        let qty = getCartQty(ctx, p.id);
-        keyboard.push([
-            { text: `➖`, callback_data: `cart_-1_${p.id}_${categoryId}` },
+function getSingleProductKeyboard(ctx, productId, categoryId) {
+    let qty = getCartQty(ctx, productId);
+    return Markup.inlineKeyboard([
+        [
+            { text: `➖`, callback_data: `cart_-1_${productId}_${categoryId}` },
             { text: `${qty} ta`, callback_data: `noop` },
-            { text: `➕`, callback_data: `cart_1_${p.id}_${categoryId}` }
-        ]);
-    });
-    return Markup.inlineKeyboard(keyboard);
+            { text: `➕`, callback_data: `cart_1_${productId}_${categoryId}` }
+        ]
+    ]);
 }
 
 
@@ -267,30 +272,25 @@ bot.hears('Bepul darslik', async (ctx) => {
 
 // To'plamlar tugmasi bosilganda narxlari, rasm va nomlari bilan chiqarish
 bot.hears('6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor', async (ctx) => {
-    const dolls = [
-        { name: "1. Klara to'plami", price: "160 000 ming so'm", filename: "klara_yangi.png" },
-        { name: "2. Alisa to'plami", price: "170 000 ming so'm", filename: "alisa_doll_1776486122819.png" },
-        { name: "3. Zara to'plami", price: "150 000 ming so'm", filename: "zara_doll_1776486339664.png" },
-        { name: "4. Ella to'plami", price: "150 000 ming so'm", filename: "ella_doll_1776486360708.png" },
-        { name: "5. Ro'za to'plami", price: "150 000 ming so'm", filename: "roza_doll_1776486425978.png" },
-        { name: "6. Liza To'plami", price: "350 000 ming so'm", filename: "liza_doll_1776486509967.png" }
-    ];
-
     await ctx.reply("Bizning 6 xil qo'g'irchoq tikish to'plamlarimiz qatoriga quyidagilar kiradi:");
 
-    for (const doll of dolls) {
-        const photoPath = path.join(__dirname, doll.filename); // 'images' papkasini olib tashladik
-        try {
-            if (fs.existsSync(photoPath)) {
-                await ctx.replyWithPhoto(
-                    { source: photoPath },
-                    { caption: `🛍 <b>${doll.name}</b>\n💰 Narxi: ${doll.price}`, parse_mode: "HTML" }
-                );
-            } else {
-                await ctx.reply(`🛍 <b>${doll.name}</b>\n💰 Narxi: ${doll.price}\n⚠️ (Rasm topilmadi)`, { parse_mode: "HTML" });
+    if (productsData.cat_toplam) {
+        for (const p of productsData.cat_toplam) {
+            const text = `🛍 <b>${p.name}</b>\n💰 Narxi: ${p.price} so'm`;
+            const photoPath = path.join(__dirname, p.image);
+            
+            const markup = getSingleProductKeyboard(ctx, p.id, 'cat_toplam');
+            
+            try {
+                if (fs.existsSync(photoPath)) {
+                    await ctx.replyWithPhoto({ source: photoPath }, { caption: text, parse_mode: "HTML", reply_markup: markup.reply_markup });
+                } else {
+                    await ctx.reply(text + "\n⚠️ (Rasm tez orada qo'shiladi)", { parse_mode: "HTML", reply_markup: markup.reply_markup });
+                }
+                await new Promise(r => setTimeout(r, 100)); 
+            } catch (error) {
+                console.error(`Rasm yuborishda xatolik (${p.name}):`, error.message);
             }
-        } catch (error) {
-            console.error(`Rasm yuborishda xatolik (${doll.name}):`, error.message);
         }
     }
 });
@@ -323,22 +323,37 @@ bot.hears('Kerakli mahsulotlar', (ctx) => {
 });
 
 const categoriesMapping = {
-    cat_matolar: "🧵 <b>Matolar bo'limi:</b>\n",
-    cat_sochlar: "💇‍♀️ <b>Sochlar bo'limi:</b>\n",
-    cat_oyoq: "👟 <b>Oyoq kiyimlar bo'limi:</b>\n",
-    cat_aksessuar: "🎀 <b>Aksessuarlar bo'limi:</b>\n"
+    cat_matolar: "🧵 <b>Matolar bo'limi:</b>",
+    cat_sochlar: "💇‍♀️ <b>Sochlar bo'limi:</b>",
+    cat_oyoq: "👟 <b>Oyoq kiyimlar bo'limi:</b>",
+    cat_aksessuar: "🎀 <b>Aksessuarlar bo'limi:</b>"
 };
 
 Object.keys(categoriesMapping).forEach(cat => {
-    bot.action(cat, (ctx) => {
-        let text = categoriesMapping[cat] + "\n";
+    bot.action(cat, async (ctx) => {
+        await ctx.answerCbQuery().catch(()=>{});
+        await ctx.reply(categoriesMapping[cat], { parse_mode: "HTML" });
+        
         if (productsData[cat]) {
-            productsData[cat].forEach((p, idx) => {
-                text += `${idx + 1}. ${p.name} - ${p.price} so'm\n`;
-            });
+            for (const p of productsData[cat]) {
+                const text = `🛍 <b>${p.name}</b>\n💰 Narxi: ${p.price} so'm`;
+                const photoPath = path.join(__dirname, p.image || `${p.id}.jpg`); // Har biriga o'zining ID si bilan rasm qidirtiramiz
+                
+                const markup = getSingleProductKeyboard(ctx, p.id, cat);
+                
+                try {
+                    if (fs.existsSync(photoPath)) {
+                        await ctx.replyWithPhoto({ source: photoPath }, { caption: text, parse_mode: "HTML", reply_markup: markup.reply_markup });
+                    } else {
+                        await ctx.reply(text + "\n⚠️ (Rasm tez orada qo'shiladi)", { parse_mode: "HTML", reply_markup: markup.reply_markup });
+                    }
+                    // Telegram bloklamasligi uchun kichik pauza
+                    await new Promise(r => setTimeout(r, 100)); 
+                } catch(e) {
+                    console.error("Xato:", e.message);
+                }
+            }
         }
-        ctx.answerCbQuery();
-        ctx.reply(text, { parse_mode: "HTML", reply_markup: renderCategoryKeyboard(ctx, cat).reply_markup });
     });
 });
 
@@ -359,7 +374,8 @@ bot.action(/cart_(-?\d+)_([a-zA-Z0-9]+)_([a-zA-Z_]+)/, async (ctx) => {
     ctx.session.cart[productId] = currentQty;
     
     try {
-        await ctx.editMessageReplyMarkup(renderCategoryKeyboard(ctx, categoryId).reply_markup);
+        const markup = getSingleProductKeyboard(ctx, productId, categoryId);
+        await ctx.editMessageReplyMarkup(markup.reply_markup);
         await ctx.answerCbQuery(amount > 0 ? "🛒 Savatga qo'shildi!" : "Savatdan olindi!");
     } catch(e) {
         // Ob'ekt o'zgarmagan bo'lsa xatolik beradi
