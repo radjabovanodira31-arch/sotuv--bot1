@@ -27,7 +27,7 @@ let stats = {
 // MAHSULOTLAR BAZASI
 const productsData = {
     cat_toplam: [
-        { id: "t1", name: "1. Klara to'plami", price: 160000, image: "klara_yangi.png" },
+        { id: "t1", name: "1. Klara to'plami", price: 160000, image: "klara_doll.png" },
         { id: "t2", name: "2. Alisa to'plami", price: 170000, image: "alisa_doll_1776486122819.png" },
         { id: "t3", name: "3. Zara to'plami", price: 150000, image: "zara_doll_1776486339664.png" },
         { id: "t4", name: "4. Ella to'plami", price: 150000, image: "ella_doll_1776486360708.png" },
@@ -35,53 +35,53 @@ const productsData = {
         { id: "t6", name: "6. Liza To'plami", price: 350000, image: "liza_doll_1776486509967.png" }
     ],
     cat_matolar: [
-        { id: "m1", name: "Kukolniy trikotaj (0,5 metr)", price: 35000 },
-        { id: "m2", name: "Alisa uchun to'plam matolari (2 ta)", price: 55000 },
-        { id: "m3", name: "Klara uchun to'plam matosi", price: 45000 },
-        { id: "m4", name: "Zara uchun to'plam matosi", price: 45000 },
-        { id: "m5", name: "Ro'za uchun to'plam matosi", price: 45000 },
-        { id: "m6", name: "Ella uchun to'plam matosi", price: 40000 }
+        { id: "m1", name: "Kukolniy trikotaj (0,5 metr)", price: 35000, image: "kukolniy trikotaj web.jpg" },
+        { id: "m2", name: "Alisa uchun to'plam matolari (2 ta)", price: 55000, image: "Alisa mato.jpg" },
+        { id: "m3", name: "Klara uchun to'plam matosi", price: 45000, image: "KLara mato.jpg" },
+        { id: "m4", name: "Zara uchun to'plam matosi", price: 45000, image: "Zara mato.jpg" },
+        { id: "m5", name: "Ro'za uchun to'plam matosi", price: 45000, image: "Ro'za mato.jpg" },
+        { id: "m6", name: "Ella uchun to'plam matosi", price: 40000, image: "Ella mato.jpg" }
     ],
     cat_sochlar: [
-        { id: "s1", name: "To'q jigarrang soch (25 sm)", price: 23000 },
-        { id: "s2", name: "Kashtan rangli soch (25 sm)", price: 23000 },
-        { id: "s3", name: "Sariq soch (25 sm)", price: 23000 },
-        { id: "s4", name: "To'q jigarrang soch (15 sm)", price: 18000 },
-        { id: "s5", name: "Sariq soch (15 sm)", price: 18000 },
-        { id: "s6", name: "To'q jigarrang soch (5 sm)", price: 12000 },
-        { id: "s7", name: "To'q kashtan soch (5 sm)", price: 12000 },
-        { id: "s8", name: "Pushti soch (25 sm)", price: 23000 },
-        { id: "s9", name: "Siyohrang soch (25 sm)", price: 23000 },
-        { id: "s10", name: "To'lqin kashtan soch (20 sm)", price: 25000 },
-        { id: "s11", name: "To'lqin rusiy soch (15 sm)", price: 20000 },
-        { id: "s12", name: "Lokon kashtan rang (15 sm)", price: 25000 }
+        { id: "s1", name: "To'q jigarrang soch (25 sm)", price: 23000, image: "soch jigarrang.jpg" },
+        { id: "s2", name: "Kashtan rangli soch (25 sm)", price: 23000, image: "soch kashtan.jpg" },
+        { id: "s3", name: "Sariq soch (25 sm)", price: 23000, image: "soch sariq.jpg" },
+        { id: "s4", name: "To'q jigarrang soch (15 sm)", price: 18000, image: "15 smli to'q jigarrang.jpg" },
+        { id: "s5", name: "Sariq soch (15 sm)", price: 18000, image: "soch sariq.jpg" },
+        { id: "s6", name: "To'q jigarrang soch (5 sm)", price: 12000, image: "5 smli to'q jigarrang.jpg" },
+        { id: "s7", name: "To'q kashtan soch (5 sm)", price: 12000, image: "5 smli och jigarrang soch.jpg" },
+        { id: "s8", name: "Pushti soch (25 sm)", price: 23000, image: "soch pushti.jpg" },
+        { id: "s9", name: "Siyohrang soch (25 sm)", price: 23000, image: "soch fiolet.jpg" },
+        { id: "s10", name: "To'lqin kashtan soch (20 sm)", price: 25000, image: "to'lqin kashtan soch.jpg" },
+        { id: "s11", name: "To'lqin rusiy soch (15 sm)", price: 20000, image: "15 smli russiy to'lqin.jpg" },
+        { id: "s12", name: "Lokon kashtan rang (15 sm)", price: 25000, image: "lokon 15 smli.jpg" }
     ],
     cat_oyoq: [
-        { id: "o1", name: "Och pushti keda (5 sm)", price: 20000 },
-        { id: "o2", name: "To'q pushti keda", price: 20000 },
-        { id: "o3", name: "Qora keda", price: 20000 },
-        { id: "o4", name: "Havorang keda", price: 20000 },
-        { id: "o5", name: "Siyohrang keda", price: 20000 },
-        { id: "o6", name: "Sandal (5,5 sm, pushti)", price: 25000 }
+        { id: "o1", name: "Och pushti keda (5 sm)", price: 20000, image: "pushti keda.jpg" },
+        { id: "o2", name: "To'q pushti keda", price: 20000, image: "to'q pushti keda.jpg" },
+        { id: "o3", name: "Qora keda", price: 20000, image: "qora keda.jpg" },
+        { id: "o4", name: "Havorang keda", price: 20000, image: "havorang keda.jpg" },
+        { id: "o5", name: "Siyohrang keda", price: 20000, image: "keda fiolet.jpg" },
+        { id: "o6", name: "Sandal (5,5 sm, pushti)", price: 25000, image: "Sandal.jpg" }
     ],
     cat_aksessuar: [
-        { id: "a1", name: "Tugmacha (18 mmli)", price: 300 },
-        { id: "a2", name: "Tugmacha (12 mmli)", price: 200 },
-        { id: "a3", name: "Remen regulyator", price: 1000 },
-        { id: "a4", name: "Qora ko'z (8 mm, 1 pachka)", price: 6000 },
-        { id: "a5", name: "Qora ko'z (4 mm, 1 pachka)", price: 5000 },
-        { id: "a6", name: "Kipriklar (8 mm)", price: 13000 },
-        { id: "a7", name: "Metall knopka (sumka)", price: 1000 },
-        { id: "a8", name: "Termonakleyka (12x12 sm)", price: 12000 },
-        { id: "a9", name: "Yuz termonakleykasi (dona)", price: 3000 },
-        { id: "a10", name: "Kiprikli yuz", price: 3000 },
-        { id: "a11", name: "Jung igna (9 sm)", price: 1500 },
-        { id: "a12", name: "Oq jung (50 gr)", price: 35000 },
-        { id: "a13", name: "Dermantin (2 ta)", price: 18000 },
-        { id: "a14", name: "Zanjir (3 mm, 1 metr)", price: 4000 },
-        { id: "a15", name: "Metal knopka (sarafan, juft)", price: 4000 },
-        { id: "a16", name: "Oq quyoncha (6 sm)", price: 9000 },
-        { id: "a17", name: "Xalqa (6 mm, 1 pachka)", price: 9000 }
+        { id: "a1", name: "Tugmacha (18 mmli)", price: 300, image: "tugmacha 12 mmli.jpg" },
+        { id: "a2", name: "Tugmacha (12 mmli)", price: 200, image: "tugmacha 12 mmli.jpg" },
+        { id: "a3", name: "Remen regulyator", price: 1000, image: "remen regukyator.jpg" },
+        { id: "a4", name: "Qora ko'z (8 mm, 1 pachka)", price: 6000, image: "qora ko'z 8mm.jpg" },
+        { id: "a5", name: "Qora ko'z (4 mm, 1 pachka)", price: 5000, image: "qora ko'z 4mm.jpg" },
+        { id: "a6", name: "Kipriklar (8 mm)", price: 13000, image: "kiprik.jpg" },
+        { id: "a7", name: "Metall knopka (sumka)", price: 1000, image: "metall knopka sumka.jpg" },
+        { id: "a8", name: "Termonakleyka (12x12 sm)", price: 12000, image: "kozli yuz.jpg" },
+        { id: "a9", name: "Yuz termonakleykasi (dona)", price: 3000, image: "kozli yuz.jpg" },
+        { id: "a10", name: "Kiprikli yuz", price: 3000, image: "kiprikli yuz.jpg" },
+        { id: "a11", name: "Jung igna (9 sm)", price: 1500, image: "Jung igna 9 smli.jpg" },
+        { id: "a12", name: "Oq jung (50 gr)", price: 35000, image: "oq jung.jpg" },
+        { id: "a13", name: "Dermantin (2 ta)", price: 18000, image: "eko koja web.jpg" },
+        { id: "a14", name: "Zanjir (3 mm, 1 metr)", price: 4000, image: "zanjir web.jpg" },
+        { id: "a15", name: "Metal knopka (sarafan, juft)", price: 4000, image: "metal knopka sarafan web.jpg" },
+        { id: "a16", name: "Oq quyoncha (6 sm)", price: 9000, image: "oq quyon 6 smli.jpg" },
+        { id: "a17", name: "Xalqa (6 mm, 1 pachka)", price: 9000, image: "xalqa web.jpg" }
     ]
 };
 
@@ -277,7 +277,7 @@ bot.hears('6 xil qo\'g\'irchoq tikish to\'plamlarimiz bor', async (ctx) => {
     if (productsData.cat_toplam) {
         for (const p of productsData.cat_toplam) {
             const text = `🛍 <b>${p.name}</b>\n💰 Narxi: ${p.price} so'm`;
-            const photoPath = path.join(__dirname, p.image);
+            const photoPath = path.join(__dirname, 'images', p.image || `${p.id}.jpg`);
             
             const markup = getSingleProductKeyboard(ctx, p.id, 'cat_toplam');
             
@@ -337,7 +337,7 @@ Object.keys(categoriesMapping).forEach(cat => {
         if (productsData[cat]) {
             for (const p of productsData[cat]) {
                 const text = `🛍 <b>${p.name}</b>\n💰 Narxi: ${p.price} so'm`;
-                const photoPath = path.join(__dirname, p.image || `${p.id}.jpg`); // Har biriga o'zining ID si bilan rasm qidirtiramiz
+                const photoPath = path.join(__dirname, 'images', p.image || `${p.id}.jpg`); // Har biriga o'zining rasm yo'lini qo'ydik
                 
                 const markup = getSingleProductKeyboard(ctx, p.id, cat);
                 
